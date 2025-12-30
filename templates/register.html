@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shangri-La Referendum Registration</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<!-- QR Scanner Library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<div class="page">
+    <div class="card">
+
+        <div class="logo">
+            <img src="/static/logo.png" alt="Shangri-La Logo" class="logo-img">
+            <h1 class="title">Voter Registration</h1>
+            <p class="helper-text">Register for the national referendum</p>
+            <div class="divider"></div>
+        </div>
+
+        <form id="registerForm">
+
+            <div class="field">
+                <input type="text" id="full_name" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="field">
+                <input type="email" id="email" placeholder="Enter your email address" required>
+            </div>
+
+            <div class="field">
+                <input type="date" id="dob" required>
+            </div>
+
+            <div class="field">
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="field">
+                <input
+                    type="text"
+                    id="scc"
+                    placeholder="Enter your SCC code"
+                    required
+                    pattern="[A-Z0-9]{10}"
+                    title="SCC must be exactly 10 uppercase letters or numbers">
+
+                <div class="qr-actions">
+                    <button type="button" id="scanBtn">Scan QR</button>
+                    <button type="button" id="uploadBtn">Upload QR</button>
+                </div>
+
+                <input
+                    type="file"
+                    id="qrUpload"
+                    accept="image/*"
+                    style="display:none;">
+
+                <small class="hint">
+                    Enter 10-character SCC code or scan/upload QR
+                </small>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <!-- Camera Scan Area -->
+        <div id="qr-reader" style="display:none; width:300px; margin:20px auto;"></div>
+
+        <div id="message" class="message"></div>
+    </div>
+</div>
+
+<script>
+/* ================= DOB (18+ Restriction) ================= */
+const dobInput = document.getElementById("dob");
+const today = new Date();
+const maxDate = new Date(
+    today.getFullYear() - 18,
+    today.getMonth(),
+    today.getDate()
+);
+dobInput.max = maxDate.toISOString().split("T")[0];
+
+/* ================= QR Scan (Camera) ================= */
+const scanBtn = document.getElementById("scanBtn");
+const qrReader = document.getElementById("qr-reader");
+let html5QrCode;
+
+scanBtn.addEventListener("click", async () => {
+    qrReader.style.display = "block";
+
+    if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("qr-reader");
+    }
+
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                document.getElementById("scc").value = decodedText.toUpperCase();
+                html5QrCode.stop();
+                qrReader.style.display = "none";
+            }
+        );
+    } catch (err) {
+        alert("Camera access failed. Please allow camera permission.");
+        console.error(err);
+    }
+});
+
+/* ================= QR Upload (Image File) ================= */
+const uploadBtn = document.getElementById("uploadBtn");
+const qrUpload = document.getElementById("qrUpload");
+
+uploadBtn.addEventListener("click", () => {
+    qrUpload.click();
+});
+
+qrUpload.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const tempQr = new Html5Qrcode("qr-reader");
+
+    try {
+        const decodedText = await tempQr.scanFile(file, true);
+        document.getElementById("scc").value = decodedText.toUpperCase();
+    } catch (err) {
+        alert("Invalid QR image. Please upload a valid SCC QR code.");
+        console.error(err);
+    }
+});
+
+/* ================= Form Submit ================= */
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const messageBox = document.getElementById("message");
+    messageBox.textContent = "";
+    messageBox.className = "message";
+    messageBox.style.display = "none";
+
+    scc.value = scc.value.toUpperCase();
+
+    const data = {
+        full_name: full_name.value,
+        email: email.value,
+        dob: dob.value,
+        password: password.value,
+        scc: scc.value
+    };
+
+    const response = await fetch("/mslr/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    messageBox.style.display = "block";
+
+    if (response.ok) {
+        messageBox.textContent = result.message;
+        messageBox.classList.add("success");
+        registerForm.reset();
+    } else {
+        messageBox.textContent = result.error;
+        messageBox.classList.add("error");
+    }
+});
+</script>
+
+</body>
+</html>
