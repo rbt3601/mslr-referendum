@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request         # flask is used to create web application and jsonify is used to convert python into json format(for checking API)
+from flask import Flask, jsonify, request, render_template         # flask is used to create web application and jsonify is used to convert python into json format(for checking API)
 import re                                         # Regular expression for checking the SCC format
 from datetime import date, datetime               # for validating the age 
+from werkzeug.security import generate_password_hash, check_password_hash             #For password hashing 
 
 app = Flask(__name__)
 
@@ -20,11 +21,13 @@ def register_user():
     email = data.get("email")
     full_name = data.get("full_name")
     dob = data.get("dob")
-    password = data.get("password")
+    #password = data.get("password")
+    raw_password = data.get("password")
+    hashed_password = generate_password_hash(raw_password)
     scc = data.get("scc")
-
+    
     # Validation: check required fields
-    if not email or not full_name or not dob or not password or not scc:
+    if not email or not full_name or not dob or not raw_password or not scc:
         return jsonify({
             "error": "All fields are required"
         }), 400
@@ -45,7 +48,14 @@ def register_user():
         return jsonify({
             "error": "Registration not allowed. Voter must be at least 18 years old."
         }), 400
+    
+    # SCC format validation (10-character alphanumeric, uppercase)
+    scc_pattern = r"^[A-Z0-9]{10}$"
 
+    if not re.match(scc_pattern, scc):
+        return jsonify({
+            "error": "Invalid SCC format. SCC must be 10 uppercase alphanumeric characters."
+        }), 400
     return jsonify({
         "message": "User registered successfully",
         "user": {
@@ -55,15 +65,11 @@ def register_user():
             "scc": scc
         }
     }), 201
-    # SCC format validation (10-character alphanumeric, uppercase)
-    scc_pattern = r"^[A-Z0-9]{10}$"
 
-    if not re.match(scc_pattern, scc):
-        return jsonify({
-            "error": "Invalid SCC format. SCC must be 10 uppercase alphanumeric characters."
-        }), 400
-    
-
+# Front-end logic for the register 
+@app.route("/register", methods=["GET"])
+def register_page():
+    return render_template("register.html")
 
 if __name__ == "__main__":
     app.run(debug=True, port=9999)
