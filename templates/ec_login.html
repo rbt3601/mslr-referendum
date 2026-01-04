@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Election Commission Login</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="page">
+    <div class="card">
+
+        <div class="logo">
+            <img src="/static/logo.png" alt="Shangri-La Logo" class="logo-img">
+            <h1 class="title">Election Commission</h1>
+            <p class="helper-text">Authorized access only</p>
+            <div class="divider"></div>
+        </div>
+
+        <form id="ecLoginForm">
+
+            <div class="field">
+                <input
+                    type="email"
+                    id="username"
+                    placeholder="Election Commission Email"
+                    required>
+            </div>
+
+            <div class="field">
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    required>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+    </div>
+</div>
+
+<script>
+document.getElementById("ecLoginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const messageBox = document.getElementById("message");
+    messageBox.textContent = "";
+    messageBox.className = "message";
+    messageBox.style.display = "none";
+
+    const data = {
+        username: username.value,
+        password: password.value
+    };
+
+    const response = await fetch("/ec/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    messageBox.style.display = "block";
+
+    if (response.ok) {
+        messageBox.textContent = "Login successful. Redirecting...";
+        messageBox.classList.add("success");
+
+        setTimeout(() => {
+            window.location.href = "/ec/dashboard";
+        }, 500);
+    } else {
+        messageBox.textContent = result.error;
+        messageBox.classList.add("error");
+    }
+});
+</script>
+
+</body>
+</html>

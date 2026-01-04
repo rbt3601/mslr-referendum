@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voter Login</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="page">
+    <div class="card">
+
+        <div class="logo">
+            <img src="/static/logo.png" alt="Logo" class="logo-img">
+            <h1 class="title">Voter Login</h1>
+            <p class="helper-text">Access the referendum voting portal</p>
+            <div class="divider"></div>
+        </div>
+
+        <form id="loginForm">
+
+            <div class="field">
+                <input type="email" id="email" placeholder="Enter your email address" required>
+            </div>
+
+            <div class="field">
+                <input type="password" id="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div id="message" class="message"></div>
+
+    </div>
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const messageBox = document.getElementById("message");
+    messageBox.textContent = "";
+    messageBox.className = "message";
+    messageBox.style.display = "none";
+
+    const data = {
+        email: email.value,
+        password: password.value
+    };
+
+    const response = await fetch("/mslr/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    messageBox.style.display = "block";
+
+    if (response.ok) {
+        messageBox.textContent = result.message;
+        messageBox.classList.add("success");
+
+        // later → redirect to voting dashboard
+        // window.location.href = "/voter/dashboard";
+    } else {
+        messageBox.textContent = result.error;
+        messageBox.classList.add("error");
+    }
+});
+</script>
+
+</body>
+</html>
