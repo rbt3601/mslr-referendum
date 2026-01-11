@@ -62,9 +62,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
     if (response.ok) {
         messageBox.textContent = result.message;
         messageBox.classList.add("success");
-
-        // later → redirect to voting dashboard
-        // window.location.href = "/voter/dashboard";
+        window.location.href = "/mslr/dashboard";
     } else {
         messageBox.textContent = result.error;
         messageBox.classList.add("error");

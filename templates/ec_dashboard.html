@@ -1,14 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>EC Dashboard</title>
+    <meta charset="UTF-8">
+    <title>Election Commission Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
 
-<h1>Election Commission Dashboard</h1>
-<p>Welcome, Election Commission.</p>
+<body class="dashboard-body">
 
-<a href="/ec/logout">Logout</a>
+<!-- ================= Top Bar ================= -->
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" alt="Shangri-La Logo" class="brand-logo">
+        <div class="brand-text">
+            <h1>Election Commission Panel</h1>
+        </div>
+    </div>
+
+    <div class="user-area">
+        <span class="welcome-text">Welcome, Election Commission</span>
+        <a href="/ec/logout" class="logout-btn" title="Logout">⎋</a>
+    </div>
+</header>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- ================= Page Content ================= -->
+<main class="ec-content">
+
+    <!-- Header row -->
+    <div class="ec-header">
+        <h2>All Referendums</h2>
+        <a href="/mslr/referendum-create" class="primary-btn small-btn">
+            + Create Referendum
+        </a>
+    </div>
+
+    <!-- Referendum list -->
+    {% if referendums %}
+        <div class="referendum-list">
+
+            {% for r in referendums %}
+            <div class="referendum-card">
+
+                <!-- Left: Info -->
+                <div class="referendum-info">
+                    <h3 class="ref-title">{{ r.title }}</h3>
+
+                    <h4 class="ref-desc">
+                        {{ r.description or "No description provided." }}
+                    </h4>
+
+                    {% if r.options %}
+                    <div class="options-box">
+                        {% for opt in r.options %}
+                        <div class="option-row">
+                            <span class="option-label">
+                                Option {{ loop.index }}:
+                            </span>
+                            <span class="option-text">
+                                {{ opt.option_text }}
+                            </span>
+                            <span class="option-percent">
+                                {{ opt.percentage }}%
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <span class="status-badge {{ r.status|lower }}">
+                        {{ r.status }}
+                    </span>
+                </div>
+
+
+                <!-- Right: Actions -->
+                <div class="referendum-actions">
+
+                    <!-- View = View Results (only useful after CLOSED) -->
+                    {% if r.status == 'CLOSED' %}
+                        <a href="/mslr/ec/results/{{ r.id }}" class="secondary-btn small-btn">
+                            View Results
+                        </a>
+                    {% else %}
+                        <button class="secondary-btn small-btn" disabled>
+                            View Results
+                        </button>
+                    {% endif %}
+
+                    <!-- Status controls -->
+                    {% if r.status == 'DRAFT' %}
+                    <form method="post" action="/mslr/ec/referendum/{{ r.id }}/status">
+                        <input type="hidden" name="status" value="OPEN">
+                        <button class="primary-btn small-btn">Open</button>
+                    </form>
+                    {% elif r.status == 'OPEN' %}
+                    <form method="post" action="/mslr/ec/referendum/{{ r.id }}/status">
+                        <input type="hidden" name="status" value="CLOSED">
+                        <button class="warning-btn small-btn">Close</button>
+                    </form>
+                    {% endif %}
+
+
+                    <!-- Edit -->
+                    {% if r.status == 'DRAFT' %}
+                    <a href="/mslr/ec/referendum/{{ r.id }}/edit" class="secondary-btn small-btn">
+                        Edit
+                    </a>
+
+                    {% else %}
+                    <button class="secondary-btn small-btn" disabled>
+                        Edit
+                    </button>
+                    {% endif %}
+
+
+                   
+                    <!-- Delete (only DRAFT) -->
+                    {% if r.status == 'DRAFT' %}
+                    <form method="post"
+                        action="/mslr/referendum/{{ r.id }}/delete"
+                        onsubmit="return confirm('Are you sure you want to delete this referendum?');">
+                        <button class="danger-btn small-btn">
+                            Delete
+                        </button>
+                    </form>
+                    {% else %}
+                    <button class="danger-btn small-btn" disabled>
+                        Delete
+                    </button>
+                    {% endif %}
+
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <p class="empty-text">No referendums created yet.</p>
+    {% endif %}
+
+</main>
 
 </body>
 </html>

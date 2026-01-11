@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Referendums</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- INLINE, PAGE-SAFE STYLES -->
+    <style>
+        /* ===== Voting Page Only ===== */
+
+        .vote-container {
+            max-width: 720px;
+            margin: 40px auto;
+        }
+
+        .vote-card {
+            background: #ffffff;
+            padding: 28px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        }
+
+        .vote-title {
+            margin-bottom: 8px;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .vote-question {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .vote-status {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+
+        .vote-status.open {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .vote-status.closed {
+            background: #e74c3c;
+            color: #fff;
+        }
+
+        .vote-status.draft {
+            background: #bdc3c7;
+            color: #2c3e50;
+        }
+
+        /* === OPTIONS: RADIO BEFORE TEXT === */
+        .vote-option {
+            display: grid;
+            grid-template-columns: 22px 1fr;
+            align-items: center;
+            column-gap: 12px;
+
+            padding: 12px 14px;
+            margin-bottom: 10px;
+
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #fff;
+        }
+
+        .vote-option:hover {
+            background: #f6f9fb;
+            border-color: #cfd9df;
+        }
+
+        .vote-option input[type="radio"] {
+            margin: 0;
+            transform: scale(1.1);
+        }
+
+        .vote-option .option-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .vote-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            background: #1f3d4c;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .vote-btn:hover {
+            background: #17303c;
+        }
+
+        .already-voted {
+            margin-top: 12px;
+            font-weight: 600;
+            color: #2c7be5;
+        }
+
+        .view-results-btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 16px;
+            background: #95a5a6;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .view-results-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" class="brand-logo">
+        <h1>Shangri-La Referendum</h1>
+    </div>
+
+    <div class="user-area">
+        <span>Welcome, {{ voter_name }}</span>
+        <a href="/voter/logout" class="logout-btn">⎋</a>
+    </div>
+</header>
+
+<main class="vote-container">
+
+{% for ref in referendums %}
+<div class="vote-card">
+
+    <h2 class="vote-title">{{ ref.title }}</h2>
+
+    <p class="vote-question">{{ ref.description }}</p>
+
+    <span class="vote-status {{ ref.status|lower }}">
+        {{ ref.status }}
+    </span>
+
+    {% if ref.status == 'OPEN' %}
+
+        {% if ref.already_voted %}
+            <p class="already-voted">You have already voted.</p>
+        {% else %}
+            <form class="vote-form" data-ref="{{ ref.id }}">
+
+                {% for opt in ref.options %}
+                <label class="vote-option">
+                    <input type="radio"
+                           name="option_{{ ref.id }}"
+                           value="{{ opt.id }}"
+                           required>
+                    <span class="option-text">
+                        {{ opt.option_text }}
+                    </span>
+                </label>
+                {% endfor %}
+
+                <button type="submit" class="vote-btn">
+                    Vote
+                </button>
+            </form>
+        {% endif %}
+
+    {% elif ref.status == 'CLOSED' %}
+        <a href="/mslr/results/{{ ref.id }}" class="view-results-btn">
+            View Results
+        </a>
+
+    {% else %}
+        <span class="vote-status draft">Draft</span>
+    {% endif %}
+
+</div>
+{% endfor %}
+
+</main>
+
+<script>
+document.querySelectorAll(".vote-form").forEach(form => {
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const refId = form.dataset.ref;
+        const option = form.querySelector("input[type=radio]:checked");
+
+        if (!option) {
+            alert("Please select an option");
+            return;
+        }
+
+        const response = await fetch("/mslr/vote", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                referendum_id: refId,
+                option_id: option.value
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Vote recorded successfully");
+            location.reload();
+        } else {
+            alert(result.error || "Voting failed");
+        }
+    });
+});
+</script>
+
+</body>
+</html>

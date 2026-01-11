@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Referendum</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="dashboard-body">
+
+<!-- ================= Top Bar ================= -->
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" alt="Shangri-La Logo" class="brand-logo">
+        <div class="brand-text">
+            <h1>Election Commission Panel</h1>
+        </div>
+
+        <!-- Back button beside logo -->
+        <a href="/mslr/ec-dashboard" class="primary-btn small-btn" style="margin-left:20px;">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="user-area">
+        <span class="welcome-text">Welcome, Election Commission</span>
+        <a href="/ec/logout" class="logout-btn" title="Logout">⎋</a>
+    </div>
+</header>
+
+<!-- ================= Page Content ================= -->
+<div class="page">
+    <form id="createForm" class="card">
+
+        <h2 class="title">Create Referendum</h2>
+
+        <div class="field">
+            <input type="text" id="title" placeholder="Referendum Title" required>
+        </div>
+
+        <div class="field">
+            <textarea id="description" placeholder="Referendum Description" required></textarea>
+        </div>
+
+        <!-- ================= Voting Options ================= -->
+        <div class="field">
+            <label><strong>Options</strong></label>
+
+            <div id="optionsContainer">
+                <input type="text" class="option-input" placeholder="Option 1" required>
+                <input type="text" class="option-input" placeholder="Option 2" required>
+            </div>
+
+            <div class="qr-actions">
+                <button type="button" id="addOptionBtn">+ Add Option</button>
+                <button type="button" id="removeOptionBtn">− Remove Option</button>
+            </div>
+        </div>
+
+        <!-- ================= Status ================= -->
+        <div class="field">
+            <select id="status" required>
+                <option value="DRAFT">Draft</option>
+                <option value="OPEN">Open</option>
+            </select>
+        </div>
+
+        <button type="submit">Create Referendum</button>
+
+        <div id="message" class="message"></div>
+    </form>
+</div>
+
+<script>
+const optionsContainer = document.getElementById("optionsContainer");
+const addBtn = document.getElementById("addOptionBtn");
+const removeBtn = document.getElementById("removeOptionBtn");
+const messageBox = document.getElementById("message");
+
+/* Add Option */
+addBtn.addEventListener("click", () => {
+    const count = optionsContainer.children.length;
+    if (count >= 4) {
+        alert("Maximum 4 options allowed.");
+        return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "option-input";
+    input.placeholder = `Option ${count + 1}`;
+    input.required = true;
+
+    optionsContainer.appendChild(input);
+});
+
+/* Remove Option */
+removeBtn.addEventListener("click", () => {
+    const count = optionsContainer.children.length;
+    if (count <= 2) {
+        alert("At least 2 options are required.");
+        return;
+    }
+    optionsContainer.removeChild(optionsContainer.lastElementChild);
+});
+
+/* Submit */
+document.getElementById("createForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    messageBox.style.display = "none";
+
+    const options = [...document.querySelectorAll(".option-input")]
+        .map(o => o.value.trim())
+        .filter(o => o !== "");
+
+    if (options.length < 2 || options.length > 4) {
+        messageBox.textContent = "Please provide between 2 and 4 voting options.";
+        messageBox.className = "message error";
+        messageBox.style.display = "block";
+        return;
+    }
+
+    const payload = {
+        title: title.value,
+        description: description.value,
+        status: status.value,
+        options: options
+    };
+
+    const response = await fetch("/mslr/referendum-create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    messageBox.style.display = "block";
+
+    if (response.ok) {
+        messageBox.textContent = "Referendum created successfully.";
+        messageBox.className = "message success";
+        setTimeout(() => window.location.href = "/mslr/ec-dashboard", 800);
+    } else {
+        messageBox.textContent = result.error;
+        messageBox.className = "message error";
+    }
+});
+</script>
+
+</body>
+</html>

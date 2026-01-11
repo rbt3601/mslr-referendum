@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Referendum Results</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="dashboard-body">
+
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" class="brand-logo">
+        <h1>Referendum Results</h1>
+    </div>
+    <div class="user-area">
+        <span>Welcome, {{ voter_name }}</span>
+        <a href="/voter/logout" class="logout-btn">⎋</a>
+    </div>
+</header>
+
+<main class="vote-container">
+
+<div class="vote-card">
+    <h2 class="vote-title">{{ referendum.title }}</h2>
+    <p class="vote-question">{{ referendum.description }}</p>
+
+    <span class="vote-status closed">CLOSED</span>
+
+    {% for opt in options %}
+        <div class="vote-option" style="cursor: default;">
+            <span class="option-text">
+                {{ loop.index }}. {{ opt.option_text }}
+            </span>
+            <strong>{{ opt.vote_count }} votes</strong>
+        </div>
+    {% endfor %}
+
+    <a href="/mslr/referendums" class="view-results-btn" style="margin-top:20px;">
+        Back to Referendums
+    </a>
+</div>
+
+</main>
+</body>
+</html>

@@ -49,5 +49,36 @@ INSERT INTO scc_codes (scc_code) VALUES
 
 
 select * from scc_codes;
-
+select * from referendums;
 select * from voters;
+
+CREATE TABLE referendums (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status ENUM('DRAFT', 'OPEN', 'CLOSED') NOT NULL DEFAULT 'DRAFT'
+);
+
+CREATE TABLE referendum_options (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referendum_id INT NOT NULL,
+    option_text VARCHAR(255) NOT NULL,
+    vote_count INT DEFAULT 0,
+    FOREIGN KEY (referendum_id) REFERENCES referendums(id) ON DELETE CASCADE
+);
+
+CREATE TABLE votes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referendum_id INT NOT NULL,
+    voter_id INT NOT NULL,
+    option_id INT NOT NULL,
+    voted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_vote (referendum_id, voter_id),
+    FOREIGN KEY (referendum_id) REFERENCES referendums(id),
+    FOREIGN KEY (option_id) REFERENCES referendum_options(id),
+    FOREIGN KEY (voter_id) REFERENCES voters(id)
+);
+
+use mslr_db;
+
+show TABLES;

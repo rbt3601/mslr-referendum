@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Closed Referendums</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="dashboard-body">
+
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" class="brand-logo">
+        <h1>Closed Referendums</h1>
+    </div>
+    <div class="user-area">
+        <span>Welcome, {{ voter_name }}</span>
+        <a href="/voter/logout" class="logout-btn">⎋</a>
+    </div>
+</header>
+
+<main class="vote-container">
+
+{% for ref in referendums %}
+<div class="vote-card">
+
+    <h2 class="vote-title">{{ ref.title }}</h2>
+    <p class="vote-question">{{ ref.description }}</p>
+
+    <span class="vote-status closed">CLOSED</span>
+
+    <div style="margin-top:16px;">
+        {% for opt in ref.options %}
+        <div class="vote-option" style="cursor: default; justify-content: space-between;">
+            <span class="option-text">
+                {{ loop.index }}. {{ opt.option_text }}
+                {% if opt.is_winner %}
+                    <strong style="color:#28a745;"> (Winner)</strong>
+                {% endif %}
+            </span>
+            <strong>{{ opt.vote_count }} votes</strong>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% else %}
+<p>No closed referendums yet.</p>
+{% endfor %}
+
+</main>
+
+</body>
+</html>

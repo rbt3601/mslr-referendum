@@ -25,7 +25,7 @@ body {
 }
 
 .page {
-    min-height: 100vh;
+    min-height: calc(100vh - 70px);;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,10 +42,10 @@ body {
 
 
 .card {
-    width: 420px;
-    background: rgba(255, 255, 255, 0.92); /* transparent white */
+    width: 440px;
+    background: rgba(255, 255, 255, 0.92); 
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    -webkit-backdrop-filter: blur(10px); 
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 14px;
     padding: 32px;
@@ -235,3 +235,560 @@ button:hover {
 }
 
 
+.dashboard-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    background: linear-gradient(135deg, #203a43, #2c5364);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.dashboard-actions button:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.dashboard-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.dashboard-footer a {
+    text-decoration: none;
+    color: #203a43;
+    font-weight: 600;
+}
+
+
+/* Dashboard */
+
+.dashboard-body {
+    min-height: 100vh;
+    background:
+        linear-gradient(rgba(15, 32, 39, 0.75), rgba(15, 32, 39, 0.75)),
+        url("/static/bg.png") center / cover no-repeat fixed;
+    margin: 0;
+}
+
+/* Top bar */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px;
+    background: #f4f4f4;
+    backdrop-filter: blur(8px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand img {
+    width: 48px;
+    height: auto;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-text h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #203a43;
+}
+
+.brand-text span {
+    font-size: 13px;
+    color: #555;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.welcome-text {
+    font-weight: 600;
+    color: #203a43;
+}
+
+.logout-btn {
+    font-size: 20px;
+    text-decoration: none;
+    color: #203a43;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.logout-btn:hover {
+    background: #e2e6ea;
+}
+
+/* Main dashboard area */
+.dashboard-content {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 80px 40px;
+}
+
+.dashboard-card {
+    width: 320px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 14px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+.dashboard-card img {
+    width: 120px;
+    margin-bottom: 20px;
+}
+
+.dashboard-card h3 {
+    margin-bottom: 8px;
+    color: #203a43;
+}
+
+.dashboard-card p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+.primary-btn,
+.secondary-btn {
+    display: inline-block;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #203a43, #2c5364);
+    color: white;
+}
+
+.primary-btn:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.secondary-btn {
+    background: #adb5bd;
+    color: white;
+    border: none;
+    cursor: not-allowed;
+}
+
+
+/*EC Dashboard*/
+
+.ec-content {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 24px;
+}
+
+
+.ec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.ec-header h2 {
+    color: #ffffff;        
+    font-size: 26px;
+    font-weight: 700;
+}
+
+
+
+/*Referendum List*/
+
+.referendum-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.referendum-card {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.referendum-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 180px;
+}
+
+
+.referendum-info h3 {
+    margin: 0 0 6px;
+    color: #203a43;
+    flex: 1;
+    min-width: 0;
+}
+
+.referendum-info .description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.draft {
+    background: #adb5bd;
+    color: #fff;
+}
+
+.status-badge.open {
+    background: #28a745;
+    color: #fff;
+}
+
+.status-badge.closed {
+    background: #dc3545;
+    color: #fff;
+}
+
+
+/* ===== Buttons ===== */
+
+.referendum-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+
+.primary-btn {
+    background: linear-gradient(135deg, #203a43, #2c5364);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.secondary-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.warning-btn {
+    background: #ffc107;
+    color: #000;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.danger-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.empty-text {
+    color: #eee;
+    text-align: center;
+    font-size: 16px;
+    margin-top: 60px;
+}
+
+.action-btn {
+    min-width: 120px;
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+
+.small-btn {
+    min-width: 120px;
+    height: 38px;
+    padding: 8px 14px;
+    font-size: 14px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.option-input {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 14px;
+}
+
+
+.option-list {
+    margin-top: 10px;
+    padding-left: 18px;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+
+/* Options container */
+.options-box {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Each option row */
+.option-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 60px;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 6px;
+    column-gap: 10px;
+}
+
+/* Option label */
+.option-label {
+    font-weight: 600;
+    color: #444;
+}
+
+/* Option text */
+.option-text {
+    color: #333;
+    line-height: 1.4;
+
+}
+
+/* Percentage */
+.option-percent {
+    text-align: right;
+    font-weight: 600;
+    color: #0b7d2b;
+}
+
+
+.referendum-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;    
+    min-width: 160px;
+}
+
+
+.referendum-actions .small-btn,
+.referendum-actions button,
+.referendum-actions a {
+    width: 160px;              
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.referendum-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+.referendum-card {
+    gap: 40px;                 
+}
+
+
+.flash-container {
+    margin: 15px 20px;
+}
+
+.flash-message {
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.flash-message.success {
+    background-color: #e6f6ec;
+    color: #1e7e34;
+    border: 1px solid #b7e4c7;
+}
+
+
+
+/* Results page */
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: #f9fbfc;
+}
+
+.result-text {
+    font-size: 15px;
+    color: #2c3e50;
+}
+
+.result-votes {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0b7d2b;
+}
+
+
+/* ===== FIX: Closed Referendum Result Card Visibility ===== */
+
+.vote-card {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    padding: 28px;
+    border-radius: 14px;
+    margin-bottom: 32px;
+
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+/* Ensure text contrast */
+.vote-title,
+.vote-question,
+.option-text,
+.vote-status {
+    color: #203a43;
+}
+
+/* CLOSED badge spacing */
+.vote-status.closed {
+    display: inline-block;
+    margin: 12px 0 18px;
+}
+
+/* Result option rows */
+.vote-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* Winner highlight */
+.vote-option strong {
+    font-size: 14px;
+}
+
+.vote-option .option-text strong {
+    color: #28a745;
+    font-weight: 700;
+}
+
+
+/* ===== SPACING FIX FOR CLOSED REFERENDUM RESULTS ===== */
+
+/* Reduce top & bottom spacing of main container */
+.vote-container {
+    max-width: 900px;
+    margin: 24px auto 40px auto;   /* was too large before */
+}
+
+/* Tighten the card height */
+.vote-card {
+    padding: 22px 26px;           /* reduced padding */
+    margin-bottom: 24px;
+}
+
+/* Reduce title spacing */
+.vote-title {
+    margin-bottom: 6px;
+}
+
+/* Reduce question spacing */
+.vote-question {
+    margin-bottom: 10px;
+}
+
+/* CLOSED badge spacing */
+.vote-status.closed {
+    margin-bottom: 14px;
+}
+
+/* Option rows tighter */
+.vote-option {
+    padding: 10px 14px;
+    margin-bottom: 8px;
+}
+
+/* Prevent card from stretching */
+.vote-card * {
+    max-width: 100%;
+}

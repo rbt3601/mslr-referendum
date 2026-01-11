@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Referendum</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="dashboard-body">
+
+<header class="top-bar">
+    <div class="brand">
+        <img src="/static/logo.png" alt="Logo">
+        <div class="brand-text">
+            <h1>Election Commission Panel</h1>
+        </div>
+    </div>
+
+    <div class="user-area">
+        <a href="/mslr/ec-dashboard" class="secondary-btn small-btn">
+            ← Back to Dashboard
+        </a>
+        <a href="/ec/logout" class="logout-btn">⎋</a>
+    </div>
+</header>
+
+<main class="ec-content">
+    <div class="card" style="max-width: 600px; margin: auto;">
+        <h2 class="title">Edit Referendum</h2>
+
+        <form id="editForm">
+
+            <div class="field">
+                <label><strong>Title</strong></label>
+                <input type="text" id="title" value="{{ referendum.title }}" required>
+            </div>
+
+            <div class="field">
+                <label><strong>Description</strong></label>
+                <textarea id="description" required>{{ referendum.description }}</textarea>
+            </div>
+
+            <div class="field">
+                <label><strong>Options</strong></label>
+
+                <div id="optionsContainer">
+                    {% for opt in options %}
+                    <input
+                        type="text"
+                        class="option-input"
+                        value="{{ opt.option_text }}"
+                        data-option-id="{{ opt.id }}"
+                    >
+                    {% endfor %}
+                </div>
+
+                <div class="qr-actions">
+                    <button type="button" class="secondary-btn" onclick="addOption()">+ Add Option</button>
+                    <button type="button" class="danger-btn" onclick="removeOption()">− Remove Option</button>
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn">
+                Update Referendum
+            </button>
+
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+</main>
+
+<script>
+document.getElementById("editForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // Collect options
+    const optionInputs = document.querySelectorAll(".option-input");
+    const options = [];
+
+    optionInputs.forEach(input => {
+        if (input.value.trim()) {
+            options.push({
+                id: input.dataset.optionId || null,
+                text: input.value.trim()
+            });
+        }
+    });
+
+    if (options.length < 2 || options.length > 4) {
+        alert("Referendum must have 2–4 options.");
+        return;
+    }
+
+    // Payload
+    const payload = {
+        title: document.getElementById("title").value,
+        description: document.getElementById("description").value,
+        options: options
+    };
+
+    const response = await fetch("", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    const msg = document.getElementById("message");
+
+    if (response.ok) {
+        msg.className = "message success";
+        msg.textContent = "Referendum updated successfully.";
+        msg.style.display = "block";
+
+        setTimeout(() => {
+            window.location.href = "/mslr/ec-dashboard";
+        }, 800);
+    } else {
+        msg.className = "message error";
+        msg.textContent = result.error || "Update failed.";
+        msg.style.display = "block";
+    }
+});
+</script>
+
+
+<script>
+function addOption() {
+    const container = document.getElementById("optionsContainer");
+    const count = container.children.length;
+
+    if (count >= 4) {
+        alert("Maximum 4 options allowed.");
+        return;
+    }
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "option-input";
+    input.placeholder = "New option";
+    input.dataset.optionId = ""; 
+    
+    container.appendChild(input);
+}
+
+function removeOption() {
+    const container = document.getElementById("optionsContainer");
+    const count = container.children.length;
+
+    if (count <= 2) {
+        alert("Minimum 2 options required.");
+        return;
+    }
+
+    container.removeChild(container.lastElementChild);
+}
+</script>
+
+</body>
+</html>
